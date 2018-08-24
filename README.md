@@ -34,9 +34,49 @@ state = env.get_state()
 ```
 This will in particular allow you to fill your history.
 
-To perform action `a` (where a=0 corresponds to "Right" and a=1 to "Jump"), run:
+To perform action `a` (where `a=0` corresponds to `Right` and `a=1` to `Jump`), run:
 
 ```
 state, reward, terminal = env.step(a)
 ```
-In that case, `state` corresponds to the state reached after taking `a`, reward is the reward obtained by taking that action, and `terminal` is a boolean stating whether the reached state is terminal.
+The method returns state, reward, terminal, where `state` is the state reached after taking `a`, reward the reward obtained by taking that action, and `terminal` a boolean stating whether the reached state is terminal.
+
+## Advanced
+
+To customize the environment, you can pass the following arguments to the constructor:
+
+```
+Args:
+  scr_w: screen width, by default 84 pixels
+  scr_h: screen height, by default 84 pixels
+  floor_height: the height of the floor in pixels, by default 20 pixels
+  agent_w: agent width, by default 5 pixels
+  agent_h: agent height, by default 10 pixels
+  agent_init_pos: initial x position of the agent (on the floor), defaults to the left of the screen
+  agent_speed: agent lateral speed, measured in pixels per time step, by default 1 pixel
+  obstacle_position: initial x position of the obstacle (on the floor), by default 0 pixels, which is the leftmost one
+  obstacle_size: width and height of the obstacle, by default (9, 10)
+  rendering: display the game screen, by default False
+  zoom: zoom applied to the screen when rendering, by default 8
+  slow_motion: if True, sleeps for 0.1 seconds at each time step.
+            Allows to watch the game at "human" speed when played by the agent, by default False
+  with_left_action: if True, the left action is allowed, by default False
+  max_number_of_steps: the maximum number of steps for an episode, by default 600.
+  two_obstacles: puts two obstacles on the floor at a given location.
+                  The ultimate generalization test, by default False
+  finish_jump: perform a full jump when the jump action is selected.
+                Otherwise an action needs to be selected as usual, by default False
+```
+
+## Citation
+
+If you find this code useful please cite us in your work:
+
+```
+@inproceedings{Tachet2018,
+  title={Learning Invariances for Policy Generalization},
+  author={Remi Tachet des Combes and Philip Bachman and Harm van Seijen},
+  booktitle={ICLR Workshop Track},
+  year={2018}
+}
+```
