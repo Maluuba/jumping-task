@@ -57,6 +57,8 @@ state, reward, terminal = env.step(a)
 ```
 The method returns state, reward, terminal, where `state` is the state reached after taking `a`, reward the reward obtained by taking that action, and `terminal` a boolean stating whether the reached state is terminal.
 
+More implementation details can be found in the code itself.
+
 ## Advanced
 
 To customize the environment, you can pass the following arguments to the constructor:
