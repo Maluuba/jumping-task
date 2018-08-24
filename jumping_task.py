@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license. See LICENSE.md file in the project root for full license information.
+
 import argparse
 import numpy as np
 import pygame
@@ -96,35 +101,6 @@ class JumpTaskEnv(object):
 
     self.reset(obstacle_position, floor_height, two_obstacles)
 
-  def reset(self, obstacle_position=30, floor_height=10, two_obstacles=False):
-    ''' Resets the game.
-    To be called at the beginning of each episode.
-    Allows to set different obstacle positions and floor heights
-
-    Args:
-      obstacle_position: the x position of the obstacle for the new game
-      floor_height: the floor height for the new game
-      two_obstables: whether to switch to a two obstacles environment
-    '''
-    print('resetting')
-    self.floor_height = floor_height
-    self.agent_pos_x = self.agent_init_pos
-    self.agent_pos_y = self.floor_height
-    self.agent_current_speed = 0
-    self.jumping = [False, None]
-    self.step_id = 0
-    self.done = False
-    self.two_obstacles = two_obstacles
-    if not two_obstacles:
-      self.obstacle_position = obstacle_position + OBSTACLE_MIN_POSITION
-
-  def exit(self):
-    ''' Exits the game and closes the rendering.
-    '''
-    self.done = True
-    if self.rendering:
-      pygame.quit()
-
   def _game_status(self):
     ''' Returns two booleans stating whether the agent is touching the obstacle(s) (failure)
     and whether the agent has reached the right end of the screen (success).
@@ -165,6 +141,33 @@ class JumpTaskEnv(object):
       if self.agent_pos_y == self.floor_height:
         self.jumping[0] = False
 
+  def reset(self, obstacle_position=30, floor_height=10, two_obstacles=False):
+    ''' Resets the game.
+    To be called at the beginning of each episode.
+    Allows to set different obstacle positions and floor heights
+
+    Args:
+      obstacle_position: the x position of the obstacle for the new game
+      floor_height: the floor height for the new game
+      two_obstables: whether to switch to a two obstacles environment
+    '''
+    self.floor_height = floor_height
+    self.agent_pos_x = self.agent_init_pos
+    self.agent_pos_y = self.floor_height
+    self.agent_current_speed = 0
+    self.jumping = [False, None]
+    self.step_id = 0
+    self.done = False
+    self.two_obstacles = two_obstacles
+    if not two_obstacles:
+      self.obstacle_position = obstacle_position + OBSTACLE_MIN_POSITION
+
+  def exit(self):
+    ''' Exits the game and closes the rendering.
+    '''
+    self.done = True
+    if self.rendering:
+      pygame.quit()
 
   def get_state(self):
     ''' Returns an np array of the screen in greyscale
