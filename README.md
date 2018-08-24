@@ -12,7 +12,16 @@ jumping is chosen at any other point, the agent will inevitably crash into the o
 +1 is granted anytime the agent moves one pixel to the right (even in the air). The episode terminates
 if the agent reaches the right of the screen or touches the obstacle.
 
-## Setup
+## Play
+
+To play the game yourself, simply run:
+```
+ipython jumping_task.py
+```
+and use the arrows to control the agent. Check below for more game options (different obstacle locations, two obstacles...).
+Press the `e` key to exit the game.
+
+## Train
 
 To run the environment, all you need to do is import the class JumpTaskEnv defined in `jumping_task.py` and initialize it. To reproduce the setup from the aforementioned paper, create the environment with:
 
