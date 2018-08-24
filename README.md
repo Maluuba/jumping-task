@@ -12,6 +12,13 @@ jumping is chosen at any other point, the agent will inevitably crash into the o
 +1 is granted anytime the agent moves one pixel to the right (even in the air). The episode terminates
 if the agent reaches the right of the screen or touches the obstacle.
 
+## Setup
+
+To run the environment, you will need the following dependencies:
+```
+pip install argparse numpy pygame
+```
+
 ## Play
 
 To play the game yourself, simply run:
