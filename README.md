@@ -55,7 +55,7 @@ To perform action `a` (where `a=0` corresponds to `Right` and `a=1` to `Jump`), 
 ```
 state, reward, terminal = env.step(a)
 ```
-The method returns state, reward, terminal, where `state` is the state reached after taking `a`, reward the reward obtained by taking that action, and `terminal` a boolean stating whether the reached state is terminal.
+The method returns state, reward, terminal, where `state` is the state reached after taking `a`, reward is the reward obtained by taking that action, and `terminal` is a boolean stating whether the reached state is terminal.
 
 More implementation details can be found in the code itself.
 
