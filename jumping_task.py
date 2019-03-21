@@ -101,6 +101,16 @@ class JumpTaskEnv(object):
 
     self.reset(obstacle_position, floor_height, two_obstacles)
 
+    # Define gym env objects
+    try:
+      import gym
+      from gym import spaces
+      self.observation_space = spaces.Box(low=0, high=1, shape=(self.state_shape))
+      self.action_space = spaces.Discrete(self.nb_actions)
+    except:
+      # Fail silently as this is only for compatibility with codebases that expect a gym env
+      pass
+
   def _game_status(self):
     ''' Returns two booleans stating whether the agent is touching the obstacle(s) (failure)
     and whether the agent has reached the right end of the screen (success).
@@ -161,13 +171,19 @@ class JumpTaskEnv(object):
     self.two_obstacles = two_obstacles
     if not two_obstacles:
       self.obstacle_position = obstacle_position + OBSTACLE_MIN_POSITION
+    return self.get_state()
 
-  def exit(self):
+  def close(self):
     ''' Exits the game and closes the rendering.
     '''
     self.done = True
     if self.rendering:
       pygame.quit()
+
+  def seed(self, seed=None):
+    ''' Deterministic environment
+    '''
+    return [seed]
 
   def get_state(self):
     ''' Returns an np array of the screen in greyscale
@@ -247,7 +263,7 @@ class JumpTaskEnv(object):
     elif exited:
       reward += self.rewards['exit']
     self.step_id += 1
-    return self.get_state(), reward, self.done
+    return self.get_state(), reward, self.done, {}
 
   def render(self):
     ''' Render the screen game using pygame.
@@ -285,7 +301,6 @@ class JumpTaskEnv(object):
     pygame.draw.rect(self.screen, RGB_GREY, obstacle)
 
     pygame.display.flip()
-
 
 def test(args):
   env = JumpTaskEnv(scr_w=args.scr_w, scr_h=args.scr_h, floor_height=args.floor_height,
