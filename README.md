@@ -12,7 +12,21 @@ jumping is chosen at any other point, the agent will inevitably crash into the o
 +1 is granted anytime the agent moves one pixel to the right (even in the air). The episode terminates
 if the agent reaches the right of the screen or touches the obstacle.
 
-## Setup
+## Setup as a gym environment
+
+To install and use the jumping task as a gym environment, run:
+```
+pip install -e gym-jumping-task
+```
+
+You can then create an environment with:
+```
+import gym
+import gym_jumping_task
+env = gym.make('jumping-task-v0')
+```
+
+## Standard Setup
 
 To run the environment, you will need the following dependencies:
 ```
@@ -65,9 +79,9 @@ To customize the environment, you can pass the following arguments to the constr
 
 ```
 Args:
-  scr_w: screen width, by default 84 pixels
-  scr_h: screen height, by default 84 pixels
-  floor_height: the height of the floor in pixels, by default 20 pixels
+  scr_w: screen width, by default 60 pixels
+  scr_h: screen height, by default 60 pixels
+  floor_height: the height of the floor in pixels, by default 10 pixels
   agent_w: agent width, by default 5 pixels
   agent_h: agent height, by default 10 pixels
   agent_init_pos: initial x position of the agent (on the floor), defaults to the left of the screen

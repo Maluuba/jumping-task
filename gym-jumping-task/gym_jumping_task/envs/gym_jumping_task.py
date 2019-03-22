@@ -4,8 +4,10 @@
 # Licensed under the MIT license. See LICENSE.md file in the project root for full license information.
 
 import argparse
+import gym
+from gym import spaces
+from gym.utils import seeding
 import numpy as np
-import pygame
 import time
 
 
@@ -30,19 +32,24 @@ JUMP_HORIZONTAL_SPEED = 1
 
 
 ############ OBSTACLE POSITIONS ###############
-# OBSTACLE_MIN_POSITION: defines the minimum position on the screen
-# where the obstacle can be placed.
-# OBSTACLE_*: fixed x positions of two obstables on the floor.
+# OBSTACLE_*: fixed x positions of two obstacles on the floor.
 # Constrained by the shape of the jump.
 # This is used as a form of ultimate generalization test.
 # Used when two_obstacles is set to True in the environment
-OBSTACLE_MIN_POSITION = 15
 OBSTACLE_1 = 20
 OBSTACLE_2 = 55
+# These are the 6 random positions used in the paper.
+ALLOWED_OBSTACLE_X = [20, 30, 40]
+ALLOWED_OBSTACLE_Y = [10, 20]
+# Max and min positions
+LEFT = 17
+RIGHT = 48
+DOWN = 0
+UP = 41
 ###############################################
 
 
-class JumpTaskEnv(object):
+class JumpTaskEnv(gym.Env):
   """Environment for the jumping task.
 
   Args:
@@ -66,11 +73,14 @@ class JumpTaskEnv(object):
     finish_jump: perform a full jump when the jump action is selected.
                   Otherwise an action needs to be selected as usual, by default False
   """
-  def __init__(self, scr_w=60, scr_h=60, floor_height=10,
+  def __init__(self, seed=42, scr_w=60, scr_h=60, floor_height=10,
               agent_w=5, agent_h=10, agent_init_pos=0, agent_speed=1,
               obstacle_position=30, obstacle_size=(9, 10),
               rendering=False, zoom=8, slow_motion=False, with_left_action=False,
               max_number_of_steps=600, two_obstacles=False, finish_jump=False):
+
+    # Initialize seed.
+    self.seed(seed)
 
     self.rewards = {'life': -1, 'exit': 1}
     self.scr_w = scr_w
@@ -80,6 +90,7 @@ class JumpTaskEnv(object):
     self.rendering = rendering
     self.zoom = zoom
     if rendering:
+      import pygame
       self.screen = pygame.display.set_mode((zoom*scr_w, zoom*scr_h))
 
     if with_left_action:
@@ -99,17 +110,17 @@ class JumpTaskEnv(object):
     self.max_number_of_steps = max_number_of_steps
     self.finish_jump = finish_jump
 
-    self.reset(obstacle_position, floor_height, two_obstacles)
+    # Min and max positions of the obstable
+    self.min_x_position = LEFT
+    self.max_x_position = RIGHT
+    self.min_y_position = DOWN
+    self.max_y_position = UP
 
     # Define gym env objects
-    try:
-      import gym
-      from gym import spaces
-      self.observation_space = spaces.Box(low=0, high=1, shape=(self.state_shape))
-      self.action_space = spaces.Discrete(self.nb_actions)
-    except:
-      # Fail silently as this is only for compatibility with codebases that expect a gym env
-      pass
+    self.observation_space = spaces.Box(low=0, high=1, shape=(self.state_shape))
+    self.action_space = spaces.Discrete(self.nb_actions)
+
+    self.reset()
 
   def _game_status(self):
     ''' Returns two booleans stating whether the agent is touching the obstacle(s) (failure)
@@ -151,7 +162,16 @@ class JumpTaskEnv(object):
       if self.agent_pos_y == self.floor_height:
         self.jumping[0] = False
 
-  def reset(self, obstacle_position=30, floor_height=10, two_obstacles=False):
+  def reset(self, ):
+    ''' Resets the game.
+    To be called at the beginning of each episode.
+    Sets the obstacle at one of six random positions.
+    '''
+    obstacle_position = self.np_random.choice(ALLOWED_OBSTACLE_X)
+    floor_height = self.np_random.choice(ALLOWED_OBSTACLE_Y)
+    return self._reset(obstacle_position, floor_height)
+
+  def _reset(self, obstacle_position=30, floor_height=10, two_obstacles=False):
     ''' Resets the game.
     To be called at the beginning of each episode.
     Allows to set different obstacle positions and floor heights
@@ -159,19 +179,26 @@ class JumpTaskEnv(object):
     Args:
       obstacle_position: the x position of the obstacle for the new game
       floor_height: the floor height for the new game
-      two_obstables: whether to switch to a two obstacles environment
+      two_obstacles: whether to switch to a two obstacles environment
     '''
-    self.floor_height = floor_height
     self.agent_pos_x = self.agent_init_pos
-    self.agent_pos_y = self.floor_height
+    self.agent_pos_y = floor_height
     self.agent_current_speed = 0
     self.jumping = [False, None]
     self.step_id = 0
     self.done = False
     self.two_obstacles = two_obstacles
-    if not two_obstacles:
-      self.obstacle_position = obstacle_position + OBSTACLE_MIN_POSITION
+    if two_obstacles:
+      return self.get_state()
+
+    if obstacle_position < self.min_x_position or obstacle_position >= self.max_x_position:
+      raise ValueError('The obstacle x position needs to be in the range [{}, {}]'.format(self.min_x_position, self.max_x_position))
+    if floor_height < self.min_y_position or floor_height >= self.max_y_position:
+      raise ValueError('The floor height needs to be in the range [{}, {}]'.format(self.min_y_position, self.max_y_position))
+    self.obstacle_position = obstacle_position
+    self.floor_height = floor_height
     return self.get_state()
+
 
   def close(self):
     ''' Exits the game and closes the rendering.
@@ -181,8 +208,9 @@ class JumpTaskEnv(object):
       pygame.quit()
 
   def seed(self, seed=None):
-    ''' Deterministic environment
+    ''' Seed used in the random selection of the obstacle position
     '''
+    self.np_random, seed = seeding.np_random(seed)
     return [seed]
 
   def get_state(self):
@@ -193,7 +221,7 @@ class JumpTaskEnv(object):
     def _fill_rec(left, up, size, color):
       obs[left: left + size[0], up: up + size[1]] = color
 
-    # Add agent and obstables
+    # Add agent and obstacles
     _fill_rec(self.agent_pos_x, self.agent_pos_y, self.agent_size, 1.0)
     if self.two_obstacles:
       # Multiple obstacles
