@@ -164,7 +164,7 @@ class JumpTaskEnv(gym.Env):
 
   def reset(self, ):
     ''' Resets the game.
-    To be called at the beginning of each episode.
+    To be called at the beginning of each episode for training as in the paper.
     Sets the obstacle at one of six random positions.
     '''
     obstacle_position = self.np_random.choice(ALLOWED_OBSTACLE_X)
@@ -173,7 +173,6 @@ class JumpTaskEnv(gym.Env):
 
   def _reset(self, obstacle_position=30, floor_height=10, two_obstacles=False):
     ''' Resets the game.
-    To be called at the beginning of each episode.
     Allows to set different obstacle positions and floor heights
 
     Args:
