@@ -32,7 +32,7 @@ JUMP_HORIZONTAL_SPEED = 1
 ############ OBSTACLE POSITIONS ###############
 # OBSTACLE_MIN_POSITION: defines the minimum position on the screen
 # where the obstacle can be placed.
-# OBSTACLE_*: fixed x positions of two obstables on the floor.
+# OBSTACLE_*: fixed x positions of two obstacles on the floor.
 # Constrained by the shape of the jump.
 # This is used as a form of ultimate generalization test.
 # Used when two_obstacles is set to True in the environment
@@ -159,7 +159,7 @@ class JumpTaskEnv(object):
     Args:
       obstacle_position: the x position of the obstacle for the new game
       floor_height: the floor height for the new game
-      two_obstables: whether to switch to a two obstacles environment
+      two_obstacles: whether to switch to a two obstacles environment
     '''
     self.floor_height = floor_height
     self.agent_pos_x = self.agent_init_pos
@@ -193,7 +193,7 @@ class JumpTaskEnv(object):
     def _fill_rec(left, up, size, color):
       obs[left: left + size[0], up: up + size[1]] = color
 
-    # Add agent and obstables
+    # Add agent and obstacles
     _fill_rec(self.agent_pos_x, self.agent_pos_y, self.agent_size, 1.0)
     if self.two_obstacles:
       # Multiple obstacles

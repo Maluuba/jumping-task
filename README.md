@@ -53,7 +53,7 @@ env = JumpTaskEnv(scr_w=60, scr_h=60)
 Then at the beginning of each training epoch, reset it with:
 
 ```
-env.reset(floor_height=f_h, obstable_position=o_p)
+env.reset(floor_height=f_h, obstacle_position=o_p)
 ```
 
 where `f_h` is randomly sampled from [10,20] and `o_p` from [5, 15, 25].

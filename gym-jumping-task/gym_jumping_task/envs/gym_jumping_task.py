@@ -110,7 +110,7 @@ class JumpTaskEnv(gym.Env):
     self.max_number_of_steps = max_number_of_steps
     self.finish_jump = finish_jump
 
-    # Min and max positions of the obstable
+    # Min and max positions of the obstacle
     self.min_x_position = LEFT
     self.max_x_position = RIGHT
     self.min_y_position = DOWN
