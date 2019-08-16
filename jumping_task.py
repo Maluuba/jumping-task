@@ -333,7 +333,7 @@ def test(args):
     elif action == 'unknown':
       print('We did not recognize that action. Please use the arrows to move the agent or the \'e\' key to exit.')
       continue
-    _, r, term = env.step(action)
+    _, r, term, _ = env.step(action)
     env.render()
     score += r
     print('Agent position: {:2d} | Reward: {:2d} | Terminal: {}'.format(env.agent_pos_x, r, term))

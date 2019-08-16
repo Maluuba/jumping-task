@@ -3,6 +3,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT license. See LICENSE.md file in the project root for full license information.
 
+import pygame
 import argparse
 import gym
 from gym import spaces
@@ -90,7 +91,6 @@ class JumpTaskEnv(gym.Env):
     self.rendering = rendering
     self.zoom = zoom
     if rendering:
-      import pygame
       self.screen = pygame.display.set_mode((zoom*scr_w, zoom*scr_h))
 
     if with_left_action:
@@ -360,7 +360,7 @@ def test(args):
     elif action == 'unknown':
       print('We did not recognize that action. Please use the arrows to move the agent or the \'e\' key to exit.')
       continue
-    _, r, term = env.step(action)
+    _,  r, term, _ = env.step(action)
     env.render()
     score += r
     print('Agent position: {:2d} | Reward: {:2d} | Terminal: {}'.format(env.agent_pos_x, r, term))
