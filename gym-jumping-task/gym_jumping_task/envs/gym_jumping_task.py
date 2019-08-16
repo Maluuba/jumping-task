@@ -37,13 +37,13 @@ JUMP_HORIZONTAL_SPEED = 1
 # Constrained by the shape of the jump.
 # This is used as a form of ultimate generalization test.
 # Used when two_obstacles is set to True in the environment
-OBSTACLE_1 = 20
-OBSTACLE_2 = 55
+OBSTACLE_1 = 14
+OBSTACLE_2 = 47
 # These are the 6 random positions used in the paper.
 ALLOWED_OBSTACLE_X = [20, 30, 40]
 ALLOWED_OBSTACLE_Y = [10, 20]
 # Max and min positions
-LEFT = 17
+LEFT = 14
 RIGHT = 48
 DOWN = 0
 UP = 41
@@ -100,7 +100,7 @@ class JumpTaskEnv(gym.Env):
     self.nb_actions = len(self.legal_actions)
 
     self.agent_speed = agent_speed
-    self.agent_current_speed = 0
+    self.agent_current_speed = agent_speed
     self.jumping = [False, None]
     self.agent_init_pos = agent_init_pos
     self.agent_size = [agent_w, agent_h]
@@ -182,11 +182,11 @@ class JumpTaskEnv(gym.Env):
     '''
     self.agent_pos_x = self.agent_init_pos
     self.agent_pos_y = floor_height
-    self.agent_current_speed = 0
     self.jumping = [False, None]
     self.step_id = 0
     self.done = False
     self.two_obstacles = two_obstacles
+    self.floor_height = floor_height
     if two_obstacles:
       return self.get_state()
 
@@ -195,7 +195,6 @@ class JumpTaskEnv(gym.Env):
     if floor_height < self.min_y_position or floor_height >= self.max_y_position:
       raise ValueError('The floor height needs to be in the range [{}, {}]'.format(self.min_y_position, self.max_y_position))
     self.obstacle_position = obstacle_position
-    self.floor_height = floor_height
     return self.get_state()
 
 
@@ -335,6 +334,7 @@ def test(args):
                     obstacle_position=args.obstacle_position, obstacle_size=args.obstacle_size,
                     rendering=True, zoom=args.zoom, slow_motion=True, with_left_action=args.with_left_action,
                     max_number_of_steps=args.max_number_of_steps, two_obstacles=args.two_obstacles, finish_jump=args.finish_jump)
+  env._reset(obstacle_position=args.obstacle_position, floor_height=args.floor_height, two_obstacles=args.two_obstacles)
   env.render()
   score = 0
   while not env.done:
@@ -386,7 +386,7 @@ if __name__ == '__main__':
                       help='initial x position of the agent(on the floor), defaults to the left of the screen')
   parser.add_argument('--agent_speed', type=int, default=1,
                       help='agent lateral speed, measured in pixels per time step, by default 1 pixel')
-  parser.add_argument('--obstacle_position', type=int, default=0,
+  parser.add_argument('--obstacle_position', type=int, default=LEFT,
                       help='initial x position of the obstacle (on the floor), by default 0 pixels, which is the leftmost one')
   parser.add_argument('--obstacle_size', type=int, default=(9,10),
                       help='width and height of the obstacle, by default(9, 10)')
