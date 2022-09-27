@@ -1,1 +1,0 @@
-from gym_jumping_task.envs.gym_jumping_task import JumpTaskEnv
